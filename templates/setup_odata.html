@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OData Column Setup</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        .modified {
+            background-color: #ffe6e6;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>OData Column Setup</h1>
+    
+    <div class="controls">
+        <select id="urlSelect">
+            <!-- Options will be populated dynamically -->
+        </select>
+        <button onclick="fetchData()">Fetch Data</button>
+    </div>
+    
+    <div id="tableContainer"></div>
+    
+    <div id="buttonContainer" style="margin-top: 20px; display: none;">
+        <button onclick="saveModifications()">Save</button>
+        <button onclick="cancelModifications()">Cancel</button>
+    </div>
+
+    <script>
+        // Add this function at the beginning of your script
+        function populateUrlSelect() {
+            fetch('/get_urls')
+                .then(response => response.json())
+                .then(data => {
+                    const select = document.getElementById('urlSelect');
+                    select.innerHTML = ''; // Clear existing options
+                    Object.entries(data).forEach(([key, url]) => {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = `URL ${key}: ${url.split('/').slice(-1)[0]}`;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        // Call this when page loads
+        document.addEventListener('DOMContentLoaded', populateUrlSelect);
+
+        let currentData = null;
+        let modifications = {};
+        let currentUrlId = null;
+
+        function fetchData() {
+            const urlId = document.getElementById('urlSelect').value;
+            currentUrlId = urlId;
+            
+            fetch('/fetch_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `url_id=${urlId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                currentData = data;
+                displayColumnTable(data);
+                document.getElementById('buttonContainer').style.display = 'block';
+            });
+        }
+
+        function displayColumnTable(data) {
+            const container = document.getElementById('tableContainer');
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Column Name</th>
+                            <th>Data Type</th>
+                            <th>New Column Name</th>
+                            <th>New Data Type</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            data.columns.forEach((column, index) => {
+                html += `
+                    <tr id="row-${index}">
+                        <td>${column}</td>
+                        <td>${data.dtypes[column]}</td>
+                        <td>
+                            <input type="text" id="newName-${index}" placeholder="${column}">
+                        </td>
+                        <td>
+                                <select id="newType-${index}">
+                                <option value="string">string</option>
+                                <option value="int64">integer</option>
+                                <option value="float64">float</option>
+                                <option value="datetime64">datetime</option>
+                                <option value="boolean">boolean</option>
+                                <option value="convertedDate">convertedDate</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button onclick="markColumnForDeletion(${index}, '${column}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function markColumnForDeletion(index, column) {
+            const row = document.getElementById(`row-${index}`);
+            row.style.backgroundColor = '#ffcccb';
+            if (!modifications[currentUrlId]) {
+                modifications[currentUrlId] = {drops: []};
+            }
+            if (!modifications[currentUrlId].drops) {
+                modifications[currentUrlId].drops = [];
+            }
+            if (!modifications[currentUrlId].drops.includes(column)) {
+                modifications[currentUrlId].drops.push(column);
+            }
+        }
+
+        function saveModifications() {
+            const mods = {
+                renames: {},
+                dtypes: {},
+                drops: modifications[currentUrlId]?.drops || []
+            };
+
+            currentData.columns.forEach((column, index) => {
+                const newName = document.getElementById(`newName-${index}`).value;
+                const newType = document.getElementById(`newType-${index}`).value;
+                
+                if (newName && newName !== column) {
+                    mods.renames[column] = newName;
+                }
+                
+                if (newType && newType !== currentData.dtypes[column]) {
+                    mods.dtypes[column] = newType;
+                }
+            });
+
+            fetch('/save_modifications', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url_id: currentUrlId,
+                    modifications: mods
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            });
+        }
+
+        function cancelModifications() {
+            if (currentData) {
+                displayColumnTable(currentData);
+                modifications[currentUrlId] = {};
+            }
+        }
+    </script>
+</body>
+</html>

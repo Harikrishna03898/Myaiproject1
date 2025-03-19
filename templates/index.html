@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Create New SAP Project</h2>
+        <form method="POST" action="{{ url_for('handle_project_creation') }}" class="needs-validation" novalidate>
+            <!-- Basic Project Info -->
+            <div class="mb-3">
+                <label for="project_id" class="form-label">Project ID</label>
+                <input type="text" class="form-control" id="project_id" name="project_id" required
+                       pattern="[A-Za-z0-9_]+" title="Only letters, numbers, and underscores allowed">
+            </div>
+
+            <div class="mb-3">
+                <label for="project_info" class="form-label">Project Information</label>
+                <textarea class="form-control" id="project_info" name="project_info" rows="3" required></textarea>
+            </div>
+
+            <!-- Dynamic Tables Section -->
+            <div class="mb-3">
+                <label class="form-label">Tables</label>
+                <div id="tables-container">
+                    <div class="table-entry mb-3">
+                        <textarea class="form-control code-textarea" name="tables[]" required></textarea>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addTableEntry()">Add Another Table</button>
+            </div>
+
+            <!-- Access Dictionary -->
+            <div class="mb-3">
+                <label class="form-label">Access Dictionary</label>
+                <div id="access-container">
+                    <div class="input-group mb-2">
+                        <input type="number" class="form-control" name="access_keys[]" placeholder="Access ID" value="1" required>
+                        <input type="text" class="form-control" name="access_values[]" placeholder="Access Level" value="Admin" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addAccessEntry()">Add Access Entry</button>
+            </div>
+
+            <!-- Filters Dictionary -->
+            <div class="mb-3">
+                <label class="form-label">Filters Dictionary</label>
+                <div id="filters-container">
+                    <div class="input-group mb-2">
+                        <input type="number" class="form-control" name="filter_keys[]" placeholder="Access ID">
+                        <input type="text" class="form-control" name="filter_values[]" placeholder="Column Filter">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addFilterEntry()">Add Filter Entry</button>
+            </div>
+
+            <!-- Users Dictionary -->
+            <div class="mb-3">
+                <label class="form-label">Users Dictionary</label>
+                <div id="users-container">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control" name="user_keys[]" placeholder="User ID" value="i340" required>
+                        <input type="number" class="form-control" name="user_values[]" placeholder="Access ID" value="1" required>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="addUserEntry()">Add User Entry</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Project</button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+function addTableEntry() {
+    const container = document.getElementById('tables-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'table-entry mb-3';
+    newEntry.innerHTML = `
+        <div class="input-group">
+            <textarea class="form-control code-textarea" name="tables[]" required></textarea>
+            <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+        </div>
+    `;
+    container.appendChild(newEntry);
+}
+
+function addAccessEntry() {
+    const container = document.getElementById('access-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'input-group mb-2';
+    newEntry.innerHTML = `
+        <input type="number" class="form-control" name="access_keys[]" placeholder="Access ID" required>
+        <input type="text" class="form-control" name="access_values[]" placeholder="Access Level" required>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+    `;
+    container.appendChild(newEntry);
+}
+
+function addFilterEntry() {
+    const container = document.getElementById('filters-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'input-group mb-2';
+    newEntry.innerHTML = `
+        <input type="number" class="form-control" name="filter_keys[]" placeholder="Access ID">
+        <input type="text" class="form-control" name="filter_values[]" placeholder="Column Filter">
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+    `;
+    container.appendChild(newEntry);
+}
+
+function addUserEntry() {
+    const container = document.getElementById('users-container');
+    const newEntry = document.createElement('div');
+    newEntry.className = 'input-group mb-2';
+    newEntry.innerHTML = `
+        <input type="text" class="form-control" name="user_keys[]" placeholder="User ID" required>
+        <input type="number" class="form-control" name="user_values[]" placeholder="Access ID" required>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+    `;
+    container.appendChild(newEntry);
+}
+
+// Add example table template
+document.querySelector('textarea[name="tables[]"]').value = `-- Example Table Template
+CREATE TABLE Example_Table (
+    ID INTEGER PRIMARY KEY,
+    Name TEXT,
+    Description TEXT
+);`;
+</script>
+{% endblock %}

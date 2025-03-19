@@ -1,0 +1,49 @@
+{
+  "0": {
+    "renames": {},
+    "dtypes": {
+      "ChartOfAccounts": "string",
+      "GLAccount": "string",
+      "IsBalanceSheetAccount": "string",
+      "GLAccountGroup": "string",
+      "CorporateGroupAccount": "string",
+      "ProfitLossAccountType": "string",
+      "SampleGLAccount": "string",
+      "AccountIsMarkedForDeletion": "string",
+      "AccountIsBlockedForCreation": "string",
+      "AccountIsBlockedForPosting": "string",
+      "AccountIsBlockedForPlanning": "string",
+      "PartnerCompany": "string",
+      "FunctionalArea": "string",
+      "CreationDate": "string",
+      "CreatedByUser": "string",
+      "LastChangeDateTime": "string",
+      "GLAccountType": "string",
+      "GLAccountExternal": "string",
+      "IsProfitLossAccount": "string",
+      "to_Text": "string"
+    },
+    "drops": [
+      "AccountIsMarkedForDeletion",
+      "AccountIsBlockedForCreation",
+      "AccountIsBlockedForPosting",
+      "AccountIsBlockedForPlanning",
+      "to_Text"
+    ]
+  },
+  "1": {
+    "renames": {},
+    "dtypes": {
+      "ChartOfAccounts": "string",
+      "GLAccount": "string",
+      "Language": "string",
+      "GLAccountName": "string",
+      "GLAccountLongName": "string",
+      "LastChangeDateTime": "string",
+      "to_GLAccountInChartOfAccounts": "string"
+    },
+    "drops": [
+      "to_GLAccountInChartOfAccounts"
+    ]
+  }
+}

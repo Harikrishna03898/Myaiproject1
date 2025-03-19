@@ -1,0 +1,56 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: '535417e9-5f20-4e4c-838d-577748915648'
+  imageRepository: 'infosightaibot'
+  containerRegistry: 'firstcontainer2.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  Buildtag: v$(Build.BuildId)
+  Imagetag: latest
+
+pool:
+ name: 'testvmagent'
+
+stages:
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: Build
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Build
+      inputs:
+        containerRegistry: 'Firstcontainer2'
+        repository: '$(imageRepository)'
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(Buildtag)
+          $(Imagetag)
+        addBaseImageData: false
+- stage: Push
+  displayName: Push the image to ACR
+  jobs:
+  - job: Push
+    displayName: Push
+    steps:
+    - task: Docker@2
+      displayName: Push
+      inputs:
+        containerRegistry: 'Firstcontainer2'
+        repository: '$(imageRepository)'
+        command: 'push'
+        tags: |
+          $(Buildtag)
+          $(Imagetag)
+        addBaseImageData: false

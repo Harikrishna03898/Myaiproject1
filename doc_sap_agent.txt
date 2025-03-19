@@ -1,0 +1,24 @@
+keep the frontnd code as simple as possible .and fix this issue . and i don't want to loose any features . i will explain again for you .
+1. user can select projects from previous thing or create new one .or view and it will redirect to other page .
+2. add project details or edit ( project name , project deatils)
+3. add new table in that ( show default  project ids( list based indexing) and user can add or edit table_name , add odata url . for that url generate view so user can add modifciaitons , then useing those modifciation ( how you wil use from varibale data or save and then use i don't know), use that when user clicks on create or update schema then udpate that scehma ) like that for n number of tables . then save it ( all these details )
+{
+    'project_id': str,
+    'name': str,
+    'details': str,
+    'created_at': datetime,
+    'updated_at': datetime,
+    'tables': [
+        {
+            'table_id': int,
+            'table_name': str,
+            'odata_url': str,
+            'modifications': {
+                'renames': {old_name: new_name},
+                'dtypes': {column: type},
+                'drops': [column_names]
+            },
+            'sql_schema': str
+        }
+    ]
+}like this in mongodb .

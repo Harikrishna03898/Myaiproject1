@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SAP Chat Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Nunito:wght@300;400;600&display=swap');
+
+body {
+    font-family: 'Nunito', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #FFF8F0;
+}
+.chat-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 400px;
+    height: 600px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.chat-header {
+    background: #5D4037;
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+}
+.bot-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+.header-info {
+    display: flex;
+    align-items: center;
+}
+.chat-box {
+    flex: 1;
+    background: #FFF8F0;
+    padding: 15px;
+    overflow-y: auto;
+    height: calc(100% - 130px);
+}
+.message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.user-message {
+    margin: 10px;
+    padding: 10px;
+    background-color: #FF7043;
+    color: white;
+    border-radius: 8px;
+    max-width: 80%;
+    align-self: flex-end;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.bot-message {
+    background: #FAFAFA;
+    color: #424242;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 80%;
+    align-self: flex-start;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.input-container {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+button {
+    padding: 10px 20px;
+    background-color: #FF7043;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+}
+button:hover {
+    background-color: #F4511E;
+}
+.settings-panel {
+    padding: 10px;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+}
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.settings-item {
+    display: flex;
+    flex-direction: column;
+}
+.settings-item label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    color: #795548;
+}
+.settings-item input, .settings-item select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.data-table th {
+    background-color: #f2f2f2;
+    color: #795548;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+}
+.view-data-btn, .download-btn {
+    margin: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+.view-data-btn {
+    background-color: #7E57C2;
+    color: white;
+}
+.download-btn {
+    background-color: #26A69A;
+    color: white;
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 20px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 5px;
+    position: relative;
+}
+.close-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #EF5350;
+}
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #FFF8F0;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+.dropdown-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dropdown-group select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.table-selector {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #FFF8F0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.login-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.login-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+.slash-suggestions {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    width: 300px;
+}
+
+.suggestion-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #FFF3E0;
+}
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-info">
+                <div class="bot-avatar">
+                    <img src="https://images.unsplash.com/photo-1587691592099-24045742c181?q=80&w=1746&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Bot" />
+                </div>
+                <span>AleX</span>
+            </div>
+            <button onclick="closeChat()">X</button>
+        </div>
+        <div class="top-bar">
+            <div class="dropdown-group">
+                <label for="userId">User:</label>
+                <select id="userId" onchange="handleUserChange()">
+                    <!-- Will be populated with users -->
+                </select>
+            </div>
+            <div class="dropdown-group">
+                <label for="projectId">Domain:</label>
+                <select id="projectId" onchange="handleDomainChange()">
+                    <!-- Will be populated with domains -->
+                </select>
+            </div>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+            <!-- Chat messages will appear here -->
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type / to select table, then type your question..." 
+                   onkeyup="handleInput(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <div id="dataModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+// Single style declaration for all CSS
+const styles = `
+    .slash-suggestions {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        width: 300px;
+        position: absolute;
+    }
+
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+
+    .suggestion-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+`;
+
+// Add styles once
+document.addEventListener('DOMContentLoaded', () => {
+    // Add styles
+    const styleElement = document.createElement('style');
+    styleElement.textContent = styles;
+    document.head.appendChild(styleElement);
+
+    // Initialize functionality
+    loadUsers();
+    loadDomains();  // Add this line
+    setupSlashCommands();
+    setupEventListeners();
+});
+
+function setupEventListeners() {
+    // Event listeners for input
+    const input = document.getElementById('userInput');
+    input.addEventListener('keypress', handleKeyPress);
+    input.addEventListener('input', handleInput);
+
+    // Event listeners for dropdowns
+    document.getElementById('projectId').addEventListener('change', handleDomainChange);
+    document.getElementById('userId').addEventListener('change', handleUserChange);
+
+    // Click outside listener
+    document.addEventListener('click', handleClickOutside);
+}
+
+function handleClickOutside(e) {
+    if (!e.target.closest('.slash-suggestions') && !e.target.closest('#userInput')) {
+        document.querySelector('.slash-suggestions')?.remove();
+    }
+}
+
+async function loadUsers() {
+    try {
+        const response = await fetch('/get_users');
+        const data = await response.json();
+        if (data.status === 'success') {
+            const select = document.getElementById('userId');
+            select.innerHTML = '<option value="">Select User</option>';
+            data.users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.user_id;
+                option.textContent = `${user.user_id} - ${user.user_name || ''}`;
+                select.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading users:', error);
+    }
+}
+
+async function loadDomains() {
+    try {
+        const response = await fetch('/get_projects_list');
+        const data = await response.json();
+        if (data.status === 'success') {
+            const select = document.getElementById('projectId');
+            select.innerHTML = '<option value="">Select Domain</option>';
+            data.projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.project_id;
+                option.textContent = project.name;
+                select.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading domains:', error);
+    }
+}
+
+function handleDomainChange() {
+    const projectId = document.getElementById('projectId').value;
+    if (!projectId) return;
+    
+    // Clear any existing table selection
+    window.selectedTable = null;
+    document.getElementById('userInput').value = '';
+    
+    // Clear existing messages
+    document.getElementById('chatBox').innerHTML = '';
+    
+    // Send greeting message
+    fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            type: 'greeting',
+            project_id: projectId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            addMessage(data.response, false);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function setupSlashCommands() {
+    const input = document.getElementById('userInput');
+    input.addEventListener('input', async function(e) {
+        const text = e.target.value;
+        if (text === '/') {
+            showTableSuggestions();
+        }
+    });
+}
+
+async function showTableSuggestions() {
+    const input = document.getElementById('userInput');
+    const projectId = document.getElementById('projectId').value;
+    
+    if (!projectId) {
+        alert('Please select a domain first');
+        input.value = '';
+        return;
+    }
+
+    try {
+        const response = await fetch('/get_table_options', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ project_id: projectId })
+        });
+        const data = await response.json();
+
+        // Create and position suggestions
+        const suggestions = document.createElement('div');
+        suggestions.className = 'slash-suggestions';
+        
+        Object.entries(data).forEach(([key, name]) => {
+            const item = document.createElement('div');
+            item.className = 'suggestion-item';
+            item.textContent = name;
+            item.onclick = () => selectTable(key, name);
+            suggestions.appendChild(item);
+        });
+
+        // Position dropdown
+        const rect = input.getBoundingClientRect();
+        suggestions.style.top = `${rect.bottom}px`;
+        suggestions.style.left = `${rect.left}px`;
+        suggestions.style.width = `${rect.width}px`;
+
+        // Remove existing and add new
+        document.querySelector('.slash-suggestions')?.remove();
+        document.body.appendChild(suggestions);
+    } catch (error) {
+        console.error('Error fetching tables:', error);
+    }
+}
+
+function selectTable(tableKey, tableName) {
+    const input = document.getElementById('userInput');
+    const displayName = tableName.split(' - ')[1] || tableName;
+    input.value = `/${displayName} `;
+    input.focus();
+    window.selectedTable = { id: tableKey, name: displayName };
+    document.querySelector('.slash-suggestions')?.remove();
+}
+
+// Update the addMessage function to include download button
+function addMessage(message, isUser, tableData = null) {
+    const chatBox = document.getElementById('chatBox');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = isUser ? 'user-message' : 'bot-message';
+    messageDiv.textContent = message;
+
+    if (tableData) {
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '5px';
+
+        const viewButton = document.createElement('button');
+        viewButton.className = 'view-data-btn';
+        viewButton.textContent = 'View Table';
+        viewButton.onclick = () => showDataModal(tableData);
+
+        const downloadButton = document.createElement('button');
+        downloadButton.className = 'download-btn';
+        downloadButton.textContent = 'Download CSV';
+        downloadButton.onclick = () => downloadTableData(tableData);
+
+        buttonContainer.appendChild(viewButton);
+        buttonContainer.appendChild(downloadButton);
+        messageDiv.appendChild(buttonContainer);
+    }
+
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Add new function for downloading table data
+function downloadTableData(tableData) {
+    const headers = Object.keys(tableData);
+    const rowCount = tableData[headers[0]].length;
+    
+    let csvContent = headers.join(',') + '\n';
+    
+    for (let i = 0; i < rowCount; i++) {
+        const row = headers.map(header => {
+            let cell = tableData[header][i];
+            // Handle cells with commas by wrapping in quotes
+            if (cell && cell.toString().includes(',')) {
+                cell = `"${cell}"`;
+            }
+            return cell;
+        });
+        csvContent += row.join(',') + '\n';
+    }
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'table_data.csv';
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function sendMessage() {
+    const userId = document.getElementById('userId').value;
+    const projectId = document.getElementById('projectId').value;
+    const input = document.getElementById('userInput');
+    const message = input.value.trim();
+
+    // Validation
+    if (!userId || !projectId) {
+        alert('Please select both user and domain');
+        return;
+    }
+    if (!message) return;
+
+    // Add user message to chat
+    addMessage(message, true);
+
+    // Extract table_id and actual message from slash command
+    let tableId = 1001; // Default table ID
+    let actualMessage = message;
+    if (window.selectedTable) {
+        tableId = parseInt(window.selectedTable.id);
+        actualMessage = message.substring(message.indexOf(' ')).trim();
+    }
+
+    // Prepare data for SqlAgent
+    const chatData = {
+        user_id: userId,
+        project_id: projectId,
+        message: actualMessage,
+        table_id: tableId,
+        type: 'query'
+    };
+
+    // Send to backend
+    fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(chatData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            addMessage(data.response, false, data.tableData);
+            input.value = '';
+            // Clear selected table after sending
+            window.selectedTable = null;
+        } else {
+            addMessage('Error: ' + data.message, false);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        addMessage('Error processing request', false);
+    });
+}
+
+function showDataModal(tableData) {
+    const modal = document.getElementById('dataModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    // Create table HTML
+    const table = document.createElement('table');
+    table.className = 'data-table';
+    
+    // Add headers
+    const headers = Object.keys(tableData);
+    if (headers.length > 0) {
+        const headerRow = table.insertRow();
+        headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+
+        // Add data rows
+        const rowCount = tableData[headers[0]].length;
+        for (let i = 0; i < rowCount; i++) {
+            const row = table.insertRow();
+            headers.forEach(header => {
+                const cell = row.insertCell();
+                cell.textContent = tableData[header][i];
+            });
+        }
+    }
+    
+    modalContent.innerHTML = '';
+    modalContent.appendChild(table);
+    modal.style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('dataModal').style.display = 'none';
+}
+</script>
+</body>
+</html>
