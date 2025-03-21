@@ -12,13 +12,13 @@ variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '535417e9-5f20-4e4c-838d-577748915648'
   imageRepository: 'Myproject1'
-  containerRegistry: 'firstcontainer2.azurecr.io'
+  containerRegistry: 'containerregistry1.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   Buildtag: v$(Build.BuildId)
   Imagetag: latest
 
 pool:
- name: 'selfhostedagent'
+ name: 'selfagent'
 
 stages:
 - stage: Build
@@ -30,7 +30,7 @@ stages:
     - task: Docker@2
       displayName: Build
       inputs:
-        containerRegistry: 'Firstcontainer2'
+        containerRegistry: 'containerregistry1'
         repository: '$(imageRepository)'
         command: 'build'
         Dockerfile: '**/Dockerfile'
@@ -47,7 +47,7 @@ stages:
     - task: Docker@2
       displayName: Push
       inputs:
-        containerRegistry: 'Firstcontainer2'
+        containerRegistry: 'containerregistry1'
         repository: '$(imageRepository)'
         command: 'push'
         tags: |
