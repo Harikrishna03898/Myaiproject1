@@ -11,14 +11,14 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: '535417e9-5f20-4e4c-838d-577748915648'
-  imageRepository: 'infosightaibot'
+  imageRepository: 'Myproject1'
   containerRegistry: 'firstcontainer2.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   Buildtag: v$(Build.BuildId)
   Imagetag: latest
 
 pool:
- name: 'testvmagent'
+ name: 'selfhostedagent'
 
 stages:
 - stage: Build
